@@ -1,0 +1,11 @@
+<mujocoinclude>
+    <actuator>
+        <!-- Physical limits of the actuator. -->
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="papras_joint1" name="papras_torq_j1"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="papras_joint2" name="papras_torq_j2"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="papras_joint3" name="papras_torq_j3"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="papras_joint4" name="papras_torq_j4"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="papras_joint5" name="papras_torq_j5"/>
+        <motor ctrllimited="true" ctrlrange="-12.0 12.0" joint="papras_joint6" name="papras_torq_j6"/>
+    </actuator>
+</mujocoinclude>

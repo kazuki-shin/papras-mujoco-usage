@@ -1,0 +1,50 @@
+<mujocoinclude>
+    <worldbody>
+        <body name="papras_base" pos="0.0 0 0">
+            <!-- robot view -->
+            <camera mode="fixed" name="papras_robotview" pos="1.0 0 0.4" quat="0.653 0.271 0.271 0.653"/>
+            <inertial diaginertia="0 0 0" mass="0" pos="0 0 0"/>
+            <body name="papras_link_1" pos="0 0 0">
+                <inertial pos="0.00023 0.00000 0.06223" mass="0.85644" diaginertia="1.0 1.0 1.0" />
+                <joint name="papras_joint1" pos="0.0 0.0 0.126" axis="0 0 1" limited="true" range="-3.1415 3.1415" damping="0.7"/>
+                <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link1_vis" name="papras_link_1_visual" rgba="1 1 1 1" />
+                <geom type="mesh" group="0" mesh="papras_link1" name="papras_link_1_collision"/>
+                <body name="papras_link_2" pos="0 0 0">
+                    <inertial pos="0.00000 0.00080 0.03183" mass="0.94658" diaginertia="1.0 1.0 1.0" />
+                    <joint name="papras_joint2" pos="0.0 0.069 0.033" axis="0 1 0" limited="true" range="-2.0 2.0" damping="0.7"/>
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link2_vis" name="papras_link_2_visual" rgba="1 1 1 1" />
+                    <geom type="mesh" group="0" mesh="papras_link2" name="papras_link_2_collision"/>
+                    <body name="papras_link3" pos="0.067 0.008 -0.019" euler="0.0 0.0 3.14">
+                        <inertial pos="0.01768 -0.06881 0.20524" mass="1.30260" diaginertia="1.0 1.0 1.0" />
+                        <joint name="papras_joint3" pos="0.03000 -0.01150 0.26400" axis="0 1 0" limited="true" range="-3.1415 1.5707" damping="0.7"/>
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link3_vis" name="papras_link_3_visual" rgba="1 1 1 1" />
+                        <geom type="mesh" group="0" mesh="papras_link3" name="papras_link_3_collision"/>
+                        <body name="papras_link4" pos="0 0 3.14" euler="0 0 3.14">
+                            <inertial pos="0.12475 -0.05716 0.02979" mass="1.15977" diaginertia="1.0 1.0 1.0" />
+                            <joint name="papras_joint4" pos="0.19500 -0.05750 0.03000" axis="1 0 0" limited="true" range="-2.7488 2.7488" damping="0.7"/>
+                            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link4_vis" name="papras_link_4_visual" rgba="1 1 1 1" />
+                            <geom type="mesh" group="0" mesh="papras_link4" name="papras_link_4_collision"/>
+                            <body name="papras_link5" pos="0 0 0" euler="0 0 0">
+                                <inertial pos="0.05642 -0.00217 0.00002" mass="0.44688" diaginertia="1.0 1.0 1.0" />
+                                <joint name="papras_joint5" pos="0.06300 0.04500 0.00000" axis="0 1 0" limited="true" range="-1.5707 1.5707" damping="0.7"/>
+                                <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link5_vis" name="papras_link_5_visual" rgba="1 1 1 1" />
+                                <geom type="mesh" group="0" mesh="papras_link5" name="papras_link_5_collision"/>
+                                <body name="papras_link6" pos="-0.034 -0.098 -0.028" euler="0 0 0">
+                                    <inertial pos="0.06831 -0.04457 0.00000" mass="0.43273" diaginertia="1.0 1.0 1.0" />
+                                    <joint name="papras_joint6" pos="0.12300 -0.04500 0.00000" axis="1 0 0" limited="true" range="-3.1415 3.1415" damping="0.7"/>
+                                    <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link6_vis" name="papras_link_6_visual" rgba="1 1 1 1" />
+                                    <geom type="mesh" group="0" mesh="papras_link6" name="papras_link_6_collision"/>
+                                    <body name="papras_link7" pos="0 0 0">
+                                        <inertial pos="0.00337 0.00000 0.00000" mass="0.01919" diaginertia="1.0 1.0 1.0" />
+                                        <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="papras_link7_vis" name="papras_link_7_visual" rgba="1 1 1 1" />
+                                        <geom type="mesh" group="0" mesh="papras_link7" name="papras_link_7_collision"/>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+</mujocoinclude>
