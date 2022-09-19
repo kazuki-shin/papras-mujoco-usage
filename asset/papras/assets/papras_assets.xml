@@ -1,18 +1,18 @@
 <mujocoinclude>
     <asset>
-        <mesh name="papras_link1" file="meshes/link1.stl" />
-        <mesh name="papras_link2" file="meshes/link2.stl" />
-        <mesh name="papras_link3" file="meshes/link3_papras.stl" />
-        <mesh name="papras_link4" file="meshes/link4_papras.stl" />
-        <mesh name="papras_link5" file="meshes/link5.stl" />
-        <mesh name="papras_link6" file="meshes/link6_papras.stl" />
-        <mesh name="papras_link7" file="meshes/end_link.stl" />
-        <mesh name="papras_link1_vis" file="meshes/link1.stl" />
-        <mesh name="papras_link2_vis" file="meshes/link2.stl" />
-        <mesh name="papras_link3_vis" file="meshes/link3_papras_simple.stl" />
-        <mesh name="papras_link4_vis" file="meshes/link4_papras_simple.stl" />
-        <mesh name="papras_link5_vis" file="meshes/link5.stl" />
-        <mesh name="papras_link6_vis" file="meshes/link6_papras_simple.stl" />
-        <mesh name="papras_link7_vis" file="meshes/end_link.stl" />
+        <mesh name="papras_link1" file="meshes/link1.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link2" file="meshes/link2.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link3" file="meshes/link3_papras.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link4" file="meshes/link4_papras.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link5" file="meshes/link5.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link6" file="meshes/link6_papras.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link7" file="meshes/end_link.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link1_vis" file="meshes/link1.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link2_vis" file="meshes/link2.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link3_vis" file="meshes/link3_papras_simple.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link4_vis" file="meshes/link4_papras_simple.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link5_vis" file="meshes/link5.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link6_vis" file="meshes/link6_papras_simple.stl" scale="0.001 0.001 0.001"/>
+        <mesh name="papras_link7_vis" file="meshes/end_link.stl" scale="0.001 0.001 0.001"/>
     </asset>
 </mujocoinclude>

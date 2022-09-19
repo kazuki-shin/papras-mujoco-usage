@@ -9,30 +9,7 @@
         <compiler meshdir="meshes/"
                   balanceinertia="true"
                   strippath="false"/>
-        <default>
-          <default class="arm">
-              <joint damping="0.1" />
-              <motor ctrllimited="true" />
-          </default>
-          <default class="gripper">
-              <joint damping="0.01" />
-              <motor ctrllimited="true" />
-          </default>
-      </default>
   </mujoco>
-  <mujocoinclude>
-      <actuator>
-          <!-- Physical limits of the actuator. -->
-          <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint1" name="papras_torq_j1"/>
-          <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint2" name="papras_torq_j2"/>
-          <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint3" name="papras_torq_j3"/>
-          <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint4" name="papras_torq_j4"/>
-          <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint5" name="papras_torq_j5"/>
-          <motor ctrllimited="true" ctrlrange="-12.0 12.0" joint="robot1/joint6" name="papras_torq_j6"/>
-          <position ctrllimited="true" ctrlrange="0.0 0.04" joint="robot1/gripper" kp="1000" name="paparas_gripper" forcelimited="true" forcerange="-20 20"/>
-        <position ctrllimited="true" ctrlrange="-0.04 0.0" joint="robot1/gripper_sub" kp="1000" name="papras_gripper_sub" forcelimited="true" forcerange="-20 20"/>
-      </actuator>
-  </mujocoinclude>
   <!-- PAPRAS URDF Macros -->
   <!-- Main URDF File should contain:
         - world link
@@ -40,38 +17,14 @@
         - env link
         - env-robotn/link1 joint for each mount -->
   <!-- This file contains URDF geometry, transmission data and Gazebo references -->
-  <material name="black">
-    <color rgba="0.0 0.0 0.0 1.0"/>
-  </material>
-  <material name="blue">
-    <color rgba="0.0 0.0 0.8 1.0"/>
-  </material>
-  <material name="green">
-    <color rgba="0.0 0.8 0.0 1.0"/>
-  </material>
-  <material name="grey">
-    <color rgba="0.5 0.5 0.5 1.0"/>
-  </material>
-  <material name="orange">
-    <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
-  </material>
-  <material name="brown">
-    <color rgba="0.8705882352941177 0.8117647058823529 0.7647058823529411 1.0"/>
-  </material>
-  <material name="red">
-    <color rgba="0.8 0.0 0.0 1.0"/>
-  </material>
-  <material name="white">
-    <color rgba="1.0 1.0 1.0 1.0"/>
-  </material>
   <link name="world"/>
-  <joint name="robot1/env_arm_fixed" type="fixed">
+  <joint name="papras_env_arm_fixed" type="fixed">
     <parent link="world"/>
-    <child link="robot1/link1"/>
+    <child link="papras_link1"/>
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
   <!-- link 1 -->
-  <link name="robot1/link1">
+  <link name="papras_link1">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -93,16 +46,16 @@
     </inertial>
   </link>
   <!-- Joint 1 -->
-  <joint name="robot1/joint1" type="revolute">
-    <parent link="robot1/link1"/>
-    <child link="robot1/link2"/>
+  <joint name="papras_joint1" type="revolute">
+    <parent link="papras_link1"/>
+    <child link="papras_link2"/>
     <origin rpy="0 0 0" xyz="0.0 0.0 0.126"/>
     <axis xyz="0 0 1"/>
     <limit effort="100" lower="-3.141592653589793" upper="3.141592653589793" velocity="3.03687"/>
     <dynamics damping="0.7"/>
   </joint>
   <!-- link 2 -->
-  <link name="robot1/link2">
+  <link name="papras_link2">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -125,16 +78,16 @@
     </inertial>
   </link>
   <!-- Joint 2 -->
-  <joint name="robot1/joint2" type="revolute">
-    <parent link="robot1/link2"/>
-    <child link="robot1/link3"/>
+  <joint name="papras_joint2" type="revolute">
+    <parent link="papras_link2"/>
+    <child link="papras_link3"/>
     <origin rpy="0 0 0" xyz="0.0 0.069 0.033"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="-2.0" upper="2.0" velocity="3.03687"/>
     <dynamics damping="0.7"/>
   </joint>
   <!-- link 3 -->
-  <link name="robot1/link3">
+  <link name="papras_link3">
     <visual>
       <origin rpy="0 0 3.14" xyz="0.067 0.008 -0.019"/>
       <geometry>
@@ -157,16 +110,16 @@
     </inertial>
   </link>
   <!-- Joint 3 -->
-  <joint name="robot1/joint3" type="revolute">
-    <parent link="robot1/link3"/>
-    <child link="robot1/link4"/>
+  <joint name="papras_joint3" type="revolute">
+    <parent link="papras_link3"/>
+    <child link="papras_link4"/>
     <origin rpy="0 0 0" xyz="0.03000 -0.01150 0.26400"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="-3.141592653589793" upper="1.5707963267948966" velocity="3.03687"/>
     <dynamics damping="0.7"/>
   </joint>
   <!-- link 4 -->
-  <link name="robot1/link4">
+  <link name="papras_link4">
     <visual>
       <origin rpy="0 0 3.14" xyz="0.227 0.0085 -0.024"/>
       <geometry>
@@ -189,16 +142,16 @@
     </inertial>
   </link>
   <!-- Joint 4 -->
-  <joint name="robot1/joint4" type="revolute">
-    <parent link="robot1/link4"/>
-    <child link="robot1/link5"/>
+  <joint name="papras_joint4" type="revolute">
+    <parent link="papras_link4"/>
+    <child link="papras_link5"/>
     <origin rpy="0 0 0" xyz="0.19500 -0.05750 0.03000"/>
     <axis xyz="1 0 0"/>
     <limit effort="100" lower="-2.748893571891069" upper="2.748893571891069" velocity="3.03687"/>
     <dynamics damping="0.7"/>
   </joint>
   <!-- link 5 -->
-  <link name="robot1/link5">
+  <link name="papras_link5">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -221,16 +174,16 @@
     </inertial>
   </link>
   <!-- Joint 5 -->
-  <joint name="robot1/joint5" type="revolute">
-    <parent link="robot1/link5"/>
-    <child link="robot1/link6"/>
+  <joint name="papras_joint5" type="revolute">
+    <parent link="papras_link5"/>
+    <child link="papras_link6"/>
     <origin rpy="0 0 0" xyz="0.06300 0.04500 0.00000"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="3.03687"/>
     <dynamics damping="0.7"/>
   </joint>
   <!-- link 6 -->
-  <link name="robot1/link6">
+  <link name="papras_link6">
     <visual>
       <origin rpy="0 0 0" xyz="-0.034 -0.098 -0.028"/>
       <geometry>
@@ -253,16 +206,16 @@
     </inertial>
   </link>
   <!-- Joint 6 -->
-  <joint name="robot1/joint6" type="revolute">
-    <parent link="robot1/link6"/>
-    <child link="robot1/end_link"/>
+  <joint name="papras_joint6" type="revolute">
+    <parent link="papras_link6"/>
+    <child link="papras_link7"/>
     <origin rpy="0 0 0" xyz="0.12300 -0.04500 0.00000"/>
     <axis xyz="1 0 0"/>
     <limit effort="100" lower="-3.141592653589793" upper="3.141592653589793" velocity="3.03687"/>
     <dynamics damping="0.7"/>
   </joint>
   <!-- end link -->
-  <link name="robot1/end_link">
+  <link name="papras_link7">
     <visual>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <geometry>
@@ -284,13 +237,13 @@
     </inertial>
   </link>
   <!-- gripper main fixed joint-->
-  <joint name="robot1/end_link_fixed" type="fixed">
-    <parent link="robot1/end_link"/>
-    <child link="robot1/gripper_main_link"/>
+  <joint name="papras_end_fixed" type="fixed">
+    <parent link="papras_link7"/>
+    <child link="papras_gripper_main_link"/>
     <origin rpy="0 0 0" xyz="0.007 0.0 0.0"/>
   </joint>
   <!-- gripper main link -->
-  <link name="robot1/gripper_main_link">
+  <link name="papras_gripper_main_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -311,16 +264,16 @@
     </inertial>
   </link>
   <!-- gripper joint -->
-  <joint name="robot1/gripper" type="revolute">
+  <joint name="papras_gripper" type="revolute">
     <axis xyz="0 0 1"/>
     <origin rpy="0 0 -0.4" xyz="0.0552 -0.0400 0"/>
-    <parent link="robot1/gripper_main_link"/>
-    <child link="robot1/gripper_link"/>
+    <parent link="papras_gripper_main_link"/>
+    <child link="papras_gripper_link"/>
     <limit effort="100" lower="0.0" upper="1.15" velocity="3.03687"/>
     <dynamics damping="0.1" friction="0.0"/>
   </joint>
   <!-- gripper link -->
-  <link name="robot1/gripper_link">
+  <link name="papras_gripper_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -342,17 +295,17 @@
     </inertial>
   </link>
   <!-- gripper joint 1 -->
-  <joint name="robot1/gripper_sub" type="revolute">
+  <joint name="papras_gripper_sub" type="revolute">
     <axis xyz="0 0 -1"/>
     <origin rpy="0 0 0.4" xyz="0.0552 0.0400 0"/>
-    <parent link="robot1/gripper_main_link"/>
-    <child link="robot1/gripper_sub_link"/>
+    <parent link="papras_gripper_main_link"/>
+    <child link="papras_gripper_sub_link"/>
     <limit effort="100" lower="0.0" upper="1.15" velocity="3.03687"/>
     <dynamics damping="0.1" friction="0.0"/>
-    <mimic joint="robot1/gripper" multiplier="1"/>
+    <mimic joint="papras_gripper" multiplier="1"/>
   </joint>
   <!-- gripper 1 link -->
-  <link name="robot1/gripper_sub_link">
+  <link name="papras_gripper_sub_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -374,13 +327,13 @@
     </inertial>
   </link>
   <!-- gripper main fixed joint-->
-  <joint name="robot1/end_effector_joint" type="fixed">
-    <parent link="robot1/gripper_main_link"/>
-    <child link="robot1/end_effector_link"/>
+  <joint name="papras_end_effector_joint" type="fixed">
+    <parent link="papras_gripper_main_link"/>
+    <child link="papras_end_effector_link"/>
     <origin rpy="0 0 0" xyz="0.14 0.0 0.0"/>
   </joint>
   <!-- End Effector -->
-  <link name="robot1/end_effector_link">
+  <link name="papras_end_effector_link">
     <visual>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <geometry>
@@ -395,13 +348,13 @@
     </inertial>
   </link>
   <!-- camera link fixed joint -->
-  <joint name="robot1/camera_fixed_joint" type="fixed">
-    <parent link="robot1/gripper_main_link"/>
-    <child link="robot1/camera_link"/>
+  <joint name="papras_camera_fixed_joint" type="fixed">
+    <parent link="papras_gripper_main_link"/>
+    <child link="papras_camera_link"/>
     <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0.0592 0.0167 0.04452"/>
   </joint>
   <!-- Camera Link -->
-  <link name="robot1/camera_link">
+  <link name="papras_camera_link">
     <visual>
       <origin rpy="1.5707963267948966 -1.5707963267948966 0" xyz="0 0 0"/>
       <geometry>

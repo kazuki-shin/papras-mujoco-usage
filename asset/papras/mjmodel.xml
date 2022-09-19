@@ -1,4 +1,30 @@
-<mujocoinclude>
+<mujoco model="papras">
+    <compiler angle="radian" meshdir="meshes/" />
+    <size njmax="500" nconmax="100" />
+    <asset>
+        <mesh name="link1" file="link1.stl" scale="0.001 0.001 0.001" />
+        <mesh name="link2" file="link2.stl" scale="0.001 0.001 0.001" />
+        <mesh name="link3_papras_simple" file="link3_papras_simple.stl" scale="0.001 0.001 0.001" />
+        <mesh name="link4_papras_simple" file="link4_papras_simple.stl" scale="0.001 0.001 0.001" />
+        <mesh name="link5" file="link5.stl" scale="0.001 0.001 0.001" />
+        <mesh name="link6_papras_simple" file="link6_papras_simple.stl" scale="0.001 0.001 0.001" />
+        <mesh name="end_link" file="end_link.stl" scale="0.001 0.001 0.001" />
+        <mesh name="gripper_main_link" file="gripper_main_link.stl" scale="0.001 0.001 0.001" />
+        <mesh name="gripper_link" file="gripper_link.stl" scale="0.001 0.001 0.001" />
+        <mesh name="gripper_sub_link" file="gripper_sub_link.stl" scale="0.001 0.001 0.001" />
+        <mesh name="camera_mount_simple" file="camera_mount_simple.stl" />
+    </asset>
+    <actuator>
+        <!-- Physical limits of the actuator. -->
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint1" name="papras_torq_j1"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint2" name="papras_torq_j2"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint3" name="papras_torq_j3"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint4" name="papras_torq_j4"/>
+        <motor ctrllimited="true" ctrlrange="-80.0 80.0" joint="robot1/joint5" name="papras_torq_j5"/>
+        <motor ctrllimited="true" ctrlrange="-12.0 12.0" joint="robot1/joint6" name="papras_torq_j6"/>
+        <position ctrllimited="true" ctrlrange="0.0 0.04" joint="robot1/gripper" kp="1000" name="papras_gripper_finger_joint1" forcelimited="true" forcerange="-20 20"/>
+        <position ctrllimited="true" ctrlrange="-0.04 0.0" joint="robot1/gripper_sub" kp="1000" name="papras_gripper_finger_joint2" forcelimited="true" forcerange="-20 20"/>
+    </actuator>
     <worldbody>
         <geom type="mesh" mesh="link1" />
         <body name="robot1/link2" pos="0 0 0.126">
@@ -44,4 +70,4 @@
             </body>
         </body>
     </worldbody>
-</mujocoinclude>
+</mujoco>
