@@ -15,3 +15,20 @@ For those who have run the code above, you are already running `MuJoCo` under th
 In particular, we will distinguish `kinematic` and `dynamic` simulations (e.g., forward/inverse kinematics/dynamcis).
 
 Contact: sungjoon-choi@korea.ac.kr 
+
+
+
+
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/disc/h.bonnavaud/.mujoco/mujoco210/bin
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
+
+ https://github.com/openai/mujoco-py/issues/652
+ sudo apt-get install patchelf
+
+ sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3
+ pip3 install screeninfo
+
+
+GLEW initalization error: Missing GL version
+https://github.com/openai/mujoco-py/issues/268
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
