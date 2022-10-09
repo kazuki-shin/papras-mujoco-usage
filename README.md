@@ -32,3 +32,19 @@ Contact: sungjoon-choi@korea.ac.kr
 GLEW initalization error: Missing GL version
 https://github.com/openai/mujoco-py/issues/268
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
+
+MjViewer key bindings are as follows:
+
+    - TAB: Switch between MuJoCo cameras.
+    - H: Toggle hiding all GUI components.
+    - SPACE: Pause/unpause the simulation.
+    - RIGHT: Advance simulation by one step.
+    - V: Start/stop video recording.
+    - T: Capture screenshot.
+    - I: Drop into ``ipdb`` debugger.
+    - S/F: Decrease/Increase simulation playback speed.
+    - C: Toggle visualization of contact forces (off by default).
+    - D: Enable/disable frame skipping when rendering lags behind real time.
+    - R: Toggle transparency of geoms.
+    - M: Toggle display of mocap bodies.
+    - E: Toggle visualization of reference frames

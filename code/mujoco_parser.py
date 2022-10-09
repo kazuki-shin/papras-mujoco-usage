@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from screeninfo import get_monitors # get monitor size
 from scipy.spatial.distance import cdist
 from util import r2w,trim_scale,get_colors
+from rotation import euler2mat
 
 class MuJoCoParserClass():
     def __init__(self,
@@ -356,6 +357,18 @@ class MuJoCoParserClass():
             rgba  = color,
             label = label)
 
+    def add_frame(self,pos,radius=0.02,color=np.array([0.0,1.0,0.0,1.0]),label='test'):
+        """
+            Add a maker to renderer
+        """
+        self.viewer.add_marker(
+            pos   = pos,
+            type  = 100, # mjtGeom: 2:sphere, 3:capsule, 6:box, 9:arrow
+            size  = radius*np.ones(3),
+            mat   = np.eye(3).flatten(),
+            rgba  = color,
+            label = label)
+
     def add_markers(self,pos_list,type=2,radius=0.02,color=np.array([0,0,1,1]),label_list=None):
         """
             Add multiple markers with the same radius and color
@@ -417,6 +430,22 @@ class MuJoCoParserClass():
             J,err = J_R,w_err
         else:
             raise Exception('At least one IK target is required!')
+        dq = np.linalg.solve(a=(J.T@J)+1e-6*np.eye(J.shape[1]),b=J.T@err)
+        dq = trim_scale(x=dq,th=th)
+        return dq,err
+
+    def one_step_ik(self,body_name,delta_x=None,th=1.0*np.pi/180.0):
+        """
+            One-step inverse kinematics
+        """
+        J_p,J_R,J_full = self.get_J_body(body_name=body_name)
+        p_curr = self.get_p_body(body_name=body_name)
+        R_curr = self.get_R_body(body_name=body_name)
+        p_err = delta_x[:3]
+        R_err = euler2mat(delta_x[3:])
+        w_err = R_curr @ r2w(R_err)
+        J,err = J_full,np.concatenate((p_err,w_err))
+       
         dq = np.linalg.solve(a=(J.T@J)+1e-6*np.eye(J.shape[1]),b=J.T@err)
         dq = trim_scale(x=dq,th=th)
         return dq,err

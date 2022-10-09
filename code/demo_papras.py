@@ -36,9 +36,16 @@ class PAPRAS_MuJoCo:
             name='PAPRAS', rel_xml_path='../asset/papras/mjmodel.xml', VERBOSE=True)
         self.env.init_viewer(TERMINATE_GLFW=True, INITIALIZE_GLFW=True,
                         window_width=0.5, window_height=0.5)
+        
+        # Prepare for IK
+        self.q = self.env.get_q_pos(q_pos_idxs=self.env.rev_joint_idxs)
+        self.p_EE = self.env.get_p_body(body_name=self.body_name)
+        R_EE = self.env.get_R_body(body_name=self.body_name)
+        self.p_trgt = self.p_EE + np.array([0.2, 0.0, -0.2])
+        self.R_trgt = R_EE
 
-        print("HERE", self.env.rev_joint_idxs)
-        self.init_ik()
+        self.start_time = time.time()
+        self.next_target = False
 
     def rand_val(self, minimum, maximum):
         return minimum + (maximum - minimum) * random.random()
@@ -82,7 +89,6 @@ class PAPRAS_MuJoCo:
             # self.q = mujoco_joint_state
             # self.env.forward(q_pos=self.q, q_pos_idxs=self.env.rev_joint_idxs)
 
-
             base_frame_r = self.env.get_R_body(body_name=base_frame)
             base_frame_point = self.env.get_p_body(body_name=base_frame)
             eef_frame_r = self.env.get_R_body(body_name=eef_frame)
@@ -93,11 +99,10 @@ class PAPRAS_MuJoCo:
             # print(base_frame_point)
             eef_frame_t = self.create_transformation_matrix(eef_frame_r,eef_frame_point)
             transformation_matrix = base_frame_t @ eef_frame_t 
-            print(transformation_matrix)
+            # print(transformation_matrix)
 
-            cur_linear_vel = (transformation_matrix @ cur_linear_vel.T).T 
-            cur_angular_vel = (transformation_matrix @ cur_angular_vel.T).T 
-
+            # cur_linear_vel = (transformation_matrix @ cur_linear_vel.T).T 
+            # cur_angular_vel = (transformation_matrix @ cur_angular_vel.T).T 
 
             updated_twist_msg = TwistStamped()
             updated_twist_msg.twist.linear.x = cur_linear_vel[0]
@@ -107,18 +112,10 @@ class PAPRAS_MuJoCo:
             updated_twist_msg.twist.angular.y = cur_angular_vel[1]
             updated_twist_msg.twist.angular.z = cur_angular_vel[2]
             # print(current_twist_msg.twist.linear)
-            print(updated_twist_msg.twist.linear)
+            # print(updated_twist_msg.twist.linear)
 
             self.delta_x = self.calculate_cartesian_cmd(updated_twist_msg)
-            # print(self.delta_x)
-
-
-
-
-    # def main_loop(self):
-    #     pass         
-    # def update_joints(self):
-    #     pass
+            print("delta x wrt base link", self.delta_x[:3])
 
     def joint_state_callback(self, msg):
         if self.get_new_joint_state:
@@ -127,76 +124,60 @@ class PAPRAS_MuJoCo:
         
         self.current_position = msg.position
         self.current_velocity = msg.velocity
-        self.current_effort = msg.effort
-
-    def init_ik(self):
-        # Prepare for IK
-        # panda_eef / panda_link_4 / panda_link_5 / panda_link_6
-        self.q = self.env.get_q_pos(q_pos_idxs=self.env.rev_joint_idxs)
-        self.p_EE = self.env.get_p_body(body_name=self.body_name)
-        R_EE = self.env.get_R_body(body_name=self.body_name)
-        self.p_trgt = self.p_EE + np.array([0.2, 0.0, -0.2])
-        self.R_trgt = R_EE
-
-        self.start_time = time.time()
-        self.next_target = False
+        self.current_effort = msg.effort        
 
     def servo_calc(self):
+        
         curr_pos = np.array(self.joint_state.position)
-        mujoco_joint_state = np.empty(curr_pos.shape)
-        mujoco_joint_state[:6] = curr_pos[2:]
-        mujoco_joint_state[-2:] = curr_pos[:2]
+        self.q[:6] = curr_pos[2:]
+        self.q[-2:] = curr_pos[:2]
+        
         # update mujoco scene with updated joint states
-        self.q = mujoco_joint_state
         self.env.forward(q_pos=self.q, q_pos_idxs=self.env.rev_joint_idxs)
+        
+        # self.q = self.env.sim.data.qpos
 
         # get jacobian w.r.t eef link
-        jacobian_link = "robot1/end_link"
-        J_p, J_R, J_full = self.env.get_J_body(body_name=jacobian_link)
-        # print("J_full", J_full)
-
-        # compute J_† = V * D_† * U_T and dT = J_† * dX
-        pseudo_inverse = np.linalg.pinv(J_full)
-        delta_theta = pseudo_inverse @ self.delta_x
+        eef_frame = "robot1/end_link"
+        delta_theta, _ = self.env.one_step_ik(body_name = eef_frame, delta_x = self.delta_x)
         self.delta_x = np.zeros(6)
 
         # print("pseudoinverse: ", pseudo_inverse)
-        # print("delta_theta", delta_theta)
-
-        # singularity check 
-        # U, s, VT = np.linalg.svd(delta_theta)
-        # S  =  np.diag(s)
-        # print("singular matrix", S)
+        # if (delta_theta > 0).any():
+        #     print("delta_theta", delta_theta)
 
         # enforce velocity limit on delta_theta
 
         # Add the deltas to each joint
-        new_joint_state = self.joint_state
-        # for i in range(len(mujoco_joint_state)):
-        mujoco_joint_state = mujoco_joint_state + np.roll(delta_theta,2)
-        new_joint_state.position = mujoco_joint_state
+        new_joint_state = JointState()
+        self.q = self.q + delta_theta #+ np.roll(delta_theta,2)
+        temp_pos = self.q[:6]
+        new_joint_state.position = temp_pos
 
         # update internal robot state in mujoco scene
-        # self.q = mujoco_joint_state
         # self.env.forward(q_pos=self.q, q_pos_idxs=self.env.rev_joint_idxs)        
 
         # Stop if new configuration in collision
-        # n_contacts = self.env.sim.data.ncon
-        # if n_contacts > 0:
-        #     new_joint_state.position = self.joint_state.position
-        #     print("Collision Detected. Halting robot.")
+        n_contacts = self.env.sim.data.ncon
+        if n_contacts > 1:
+            new_joint_state.position = curr_pos[2:]
+            print("Collision Detected. Halting robot.")
+            # Visualize collisions
+            for c_idx in range(n_contacts):
+                contact    = self.env.sim.data.contact[c_idx]
+                p_contact  = contact.pos
+                bodyname1  = self.env.body_idx2name(self.env.sim.model.geom_bodyid[contact.geom1])
+                bodyname2  = self.env.body_idx2name(self.env.sim.model.geom_bodyid[contact.geom2])
+                label      = '%s-%s'%(bodyname1,bodyname2)
+                self.env.add_marker(pos=p_contact,radius=0.1,color=np.array([1,0,0,0.5]),label=label)
         
-        # Visualize collisions
-        # for c_idx in range(n_contacts):
-        #     contact    = self.env.sim.data.contact[c_idx]
-        #     p_contact  = contact.pos
-        #     bodyname1  = self.env.body_idx2name(env.sim.model.geom_bodyid[contact.geom1])
-        #     bodyname2  = self.env.body_idx2name(env.sim.model.geom_bodyid[contact.geom2])
-        #     label      = '%s-%s'%(bodyname1,bodyname2)
-        #     self.env.add_marker(pos=p_contact,radius=0.1,color=np.array([1,0,0,0.5]),label=label)
         
         # calc joint velocities
-        new_joint_state.velocity = delta_theta / self.publish_period            
+
+        
+        # TODO: temp removing sync with Gazebo
+        # new_joint_state.velocity = delta_theta / self.publish_period  
+        new_joint_state.velocity = []            
 
         # Compose joint trajectory message
         traj_msg = JointTrajectory()
@@ -211,14 +192,15 @@ class PAPRAS_MuJoCo:
 
         # Append traj point 
         point = JointTrajectoryPoint()                  
-        point.positions = new_joint_state.position[:6]
-        point.velocities = new_joint_state.velocity[:6]
+        point.positions = new_joint_state.position
+        point.velocities = new_joint_state.velocity
         point.time_from_start = rospy.Duration(self.publish_period)
         traj_msg.points.append(point)
         self.get_new_joint_state = True
-        # enforce posi tion bound limits on joint_state
+        # enforce position bound limits on joint_state
         # print(traj_msg)
         self.execute_pub.publish(traj_msg)
+        
 
 
     def mirror_joint_state(self):
@@ -259,10 +241,10 @@ class PAPRAS_MuJoCo:
         self.env.forward(q_pos=self.q, q_pos_idxs=self.env.rev_joint_idxs)
 
     def render(self):
-        self.env.add_marker(self.env.get_p_body(self.body_name), radius=0.01,
-                    color=np.array([1, 0, 0, 0.5]))
-        self.env.add_frame(self.p_trgt, radius=0.1, color=np.array([0, 0, 1, 0.5]))
-        self.env.render(RENDER_ALWAYS=True)
+        # self.env.add_marker(self.env.get_p_body(self.body_name), radius=0.1,
+        #             color=np.array([1, 0, 0, 0.5]))
+        # self.env.add_marker(self.p_trgt, radius=0.1, color=np.array([0, 0, 1, 0.5]))
+        self.env.render(RENDER_ALWAYS=False)
 
 if __name__ == '__main__':
     rospy.init_node('mujoco', anonymous=True)
