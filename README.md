@@ -25,6 +25,12 @@ tar -xf mujoco210-linux-x86_64.tar.gz
 cd ~/.mujoco/mujoco210/bin && ./simulate ../model/humanoid.xml
 ```
 
+Make venv if necessary
+```
+python3.8 -m venv mujoco_py_env
+source mujoco_py_env/bin/activate
+```
+
 Install mujoco_py and dependencies
 ```
 pip3 install -U 'mujoco-py<2.2,>=2.1'
@@ -35,7 +41,7 @@ pip3 install screeninfo scipy
 
 ### update ~/.bashrc
 ```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/papras/.mujoco/mujoco210/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/{user}/.mujoco/mujoco210/bin
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia # if using nvidia gpu
 ```
