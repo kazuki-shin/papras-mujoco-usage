@@ -79,8 +79,8 @@ class PAPRAS_MuJoCo:
             self.new_input = False
             current_twist_msg = self.latest_twist_msg
             # transform into base frame
-            cur_linear_vel = np.array([current_twist_msg.twist.linear.x, current_twist_msg.twist.linear.y, current_twist_msg.twist.linear.z, 1])
-            cur_angular_vel = np.array([current_twist_msg.twist.angular.x, current_twist_msg.twist.angular.y, current_twist_msg.twist.angular.z, 1])
+            cur_linear_vel = np.array([current_twist_msg.twist.linear.x, current_twist_msg.twist.linear.y, current_twist_msg.twist.linear.z])
+            cur_angular_vel = np.array([current_twist_msg.twist.angular.x, current_twist_msg.twist.angular.y, current_twist_msg.twist.angular.z])
             #
             base_frame = "robot1/link2"
             eef_frame = "robot1/end_link"
@@ -90,19 +90,21 @@ class PAPRAS_MuJoCo:
             # self.env.forward(q_pos=self.q, q_pos_idxs=self.env.rev_joint_idxs)
 
             base_frame_r = self.env.get_R_body(body_name=base_frame)
-            base_frame_point = self.env.get_p_body(body_name=base_frame)
+            base_frame_r = np.linalg.inv(base_frame_r)
+            # base_frame_point = self.env.get_p_body(body_name=base_frame)
             eef_frame_r = self.env.get_R_body(body_name=eef_frame)
-            eef_frame_point = self.env.get_p_body(body_name=eef_frame)
+            # eef_frame_point = self.env.get_p_body(body_name=eef_frame)
 
-            base_frame_t = np.linalg.inv(self.create_transformation_matrix(base_frame_r,base_frame_point))
+            # base_frame_t = np.linalg.inv(self.create_transformation_matrix(base_frame_r,base_frame_point))
             # print(base_frame_r)
             # print(base_frame_point)
-            eef_frame_t = self.create_transformation_matrix(eef_frame_r,eef_frame_point)
-            transformation_matrix = base_frame_t @ eef_frame_t 
+            # eef_frame_t = self.create_transformation_matrix(eef_frame_r,eef_frame_point)
+            # print(eef_frame_t)
+            base_to_eef_r = base_frame_r @ eef_frame_r 
             # print(transformation_matrix)
 
-            # cur_linear_vel = (transformation_matrix @ cur_linear_vel.T).T 
-            # cur_angular_vel = (transformation_matrix @ cur_angular_vel.T).T 
+            cur_linear_vel = (base_to_eef_r @ cur_linear_vel.T)
+            cur_angular_vel = (base_to_eef_r @ cur_angular_vel.T) 
 
             updated_twist_msg = TwistStamped()
             updated_twist_msg.twist.linear.x = cur_linear_vel[0]
@@ -115,7 +117,8 @@ class PAPRAS_MuJoCo:
             # print(updated_twist_msg.twist.linear)
 
             self.delta_x = self.calculate_cartesian_cmd(updated_twist_msg)
-            print("delta x wrt base link", self.delta_x[:3])
+            # print("delta x wrt base link", self.delta_x[:3])
+            # print(updated_twist_msg)
 
     def joint_state_callback(self, msg):
         if self.get_new_joint_state:
@@ -139,6 +142,7 @@ class PAPRAS_MuJoCo:
 
         # get jacobian w.r.t eef link
         eef_frame = "robot1/end_link"
+        base_link = "robot1/link2"
         delta_theta, _ = self.env.one_step_ik(body_name = eef_frame, delta_x = self.delta_x)
         self.delta_x = np.zeros(6)
 
@@ -177,7 +181,7 @@ class PAPRAS_MuJoCo:
         
         # TODO: temp removing sync with Gazebo
         # new_joint_state.velocity = delta_theta / self.publish_period  
-        new_joint_state.velocity = []            
+        new_joint_state.velocity = delta_theta[:6] / self.publish_period            
 
         # Compose joint trajectory message
         traj_msg = JointTrajectory()
