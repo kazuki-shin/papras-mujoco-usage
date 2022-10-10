@@ -16,35 +16,49 @@ In particular, we will distinguish `kinematic` and `dynamic` simulations (e.g., 
 
 Contact: sungjoon-choi@korea.ac.kr 
 
+# Mujoco_py Ubuntu 20.04 Installation
+Install mujoco binaries
+```
+mkdir ~/.mujoco && cd ~/.mujoco
+wget https://github.com/deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz
+tar -xf mujoco210-linux-x86_64.tar.gz
+cd ~/.mujoco/mujoco210/bin && ./simulate ../model/humanoid.xml
+```
 
+Install mujoco_py and dependencies
+```
+pip3 install -U 'mujoco-py<2.2,>=2.1'
+sudo apt-get install patchelf
+sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3
+pip3 install screeninfo scipy
+```
 
+### update ~/.bashrc
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/papras/.mujoco/mujoco210/bin
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia # if using nvidia gpu
+```
 
- export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/disc/h.bonnavaud/.mujoco/mujoco210/bin
- export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia
+### patchelf issue
+https://github.com/openai/mujoco-py/issues/652
+sudo apt-get install patchelf
 
- https://github.com/openai/mujoco-py/issues/652
- sudo apt-get install patchelf
-
- sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3
- pip3 install screeninfo
-
-
-GLEW initalization error: Missing GL version
+### GLEW initalization error: Missing GL version
 https://github.com/openai/mujoco-py/issues/268
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 
-MjViewer key bindings are as follows:
-
-    - TAB: Switch between MuJoCo cameras.
-    - H: Toggle hiding all GUI components.
-    - SPACE: Pause/unpause the simulation.
-    - RIGHT: Advance simulation by one step.
-    - V: Start/stop video recording.
-    - T: Capture screenshot.
-    - I: Drop into ``ipdb`` debugger.
-    - S/F: Decrease/Increase simulation playback speed.
-    - C: Toggle visualization of contact forces (off by default).
-    - D: Enable/disable frame skipping when rendering lags behind real time.
-    - R: Toggle transparency of geoms.
-    - M: Toggle display of mocap bodies.
-    - E: Toggle visualization of reference frames
+### MjViewer key bindings are as follows:
+- TAB: Switch between MuJoCo cameras.
+- H: Toggle hiding all GUI components.
+- SPACE: Pause/unpause the simulation.
+- RIGHT: Advance simulation by one step.
+- V: Start/stop video recording.
+- T: Capture screenshot.
+- I: Drop into ``ipdb`` debugger.
+- S/F: Decrease/Increase simulation playback speed.
+- C: Toggle visualization of contact forces (off by default).
+- D: Enable/disable frame skipping when rendering lags behind real time.
+- R: Toggle transparency of geoms.
+- M: Toggle display of mocap bodies.
+- E: Toggle visualization of reference frames
