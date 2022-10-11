@@ -123,9 +123,9 @@ class PAPRAS_MuJoCo:
             # print("delta x wrt base link", self.delta_x[:3])
 
     def joint_state_callback(self, msg):
-        if self.get_new_joint_state:
-            self.get_new_joint_state = False
-            self.joint_state = msg
+        # if self.get_new_joint_state:
+            # self.get_new_joint_state = False
+        self.joint_state = msg
         
         self.current_position = msg.position
         self.current_velocity = msg.velocity
@@ -207,7 +207,7 @@ class PAPRAS_MuJoCo:
         # # enforce position bound limits on joint_state
         # # print(traj_msg)
         self.execute_pub.publish(traj_msg)
-        self.get_new_joint_state = True
+        # self.get_new_joint_state = True
 
         
 
