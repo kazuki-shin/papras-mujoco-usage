@@ -11,7 +11,7 @@ import time
 from rotation import mat2euler, euler2mat
 from mujoco_parser import MuJoCoParserClass
 import pdb
-
+from low_pass_filter import LowPassFilter 
 np.set_printoptions(precision=2)
 
 print("Done.")
@@ -43,6 +43,10 @@ class PAPRAS_MuJoCo:
         R_EE = self.env.get_R_body(body_name=self.body_name)
         self.p_trgt = self.p_EE + np.array([0.2, 0.0, -0.2])
         self.R_trgt = R_EE
+
+        self.filter_coeff = 2
+
+        self.position_filter = [LowPassFilter(self.filter_coeff),LowPassFilter(self.filter_coeff),LowPassFilter(self.filter_coeff),LowPassFilter(self.filter_coeff),LowPassFilter(self.filter_coeff),LowPassFilter(self.filter_coeff)]
 
         self.start_time = time.time()
         self.next_target = False
@@ -133,6 +137,8 @@ class PAPRAS_MuJoCo:
         self.q[:6] = curr_pos[2:]
         self.q[-2:] = curr_pos[:2]
         
+        for i in range(6):
+            self.q[i] = self.position_filter[i].filter(self.q[i])
         # update mujoco scene with updated joint states
         self.env.forward(q_pos=self.q, q_pos_idxs=self.env.rev_joint_idxs)
         
@@ -251,9 +257,22 @@ class PAPRAS_MuJoCo:
 
 if __name__ == '__main__':
     rospy.init_node('mujoco', anonymous=True)
-    rate = rospy.Rate(1./0.008) # 10hz
+    rate = rospy.Rate(1./0.07) # 10hz
 
     papras_mujoco = PAPRAS_MuJoCo()
+    go_to_rest_init = Float64MultiArray()
+    go_to_rest_init.data = [0,-1.5708,1.50098,0,0.401425,0]
+
+    papras_mujoco.execute_pub.publish(go_to_rest_init)
+    rospy.sleep(2)
+
+    go_to_rest_init = Float64MultiArray()
+    go_to_rest_init.data = [0,0,0,0,0,0]
+
+    papras_mujoco.execute_pub.publish(go_to_rest_init)
+    rospy.sleep(2)
+
+
 
     while not rospy.is_shutdown():
         papras_mujoco.calculate_single_iteration()
