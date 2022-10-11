@@ -1,6 +1,6 @@
 #!/usr/bin/self.env python
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import String, Float64MultiArray
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import TwistStamped
@@ -21,9 +21,9 @@ class PAPRAS_MuJoCo:
         # ros init
         sub_joint_state = rospy.Subscriber('/joint_states', JointState, self.joint_state_callback)
         sub_twisted_joint_state = rospy.Subscriber('/servo_server/delta_twist_cmds',TwistStamped, self.twisted_stamp_callback)
-        self.execute_pub = rospy.Publisher("/arm1_controller/command", JointTrajectory, queue_size=100)
+        self.execute_pub = rospy.Publisher("/arm1_controller/command", Float64MultiArray, queue_size=100)
 
-        self.publish_period = 0.008
+        self.publish_period = 0.0080
         self.planning_frame = "robot1/link1"
         self.joint_state = JointState()
         self.latest_twist_msg = None
@@ -76,7 +76,6 @@ class PAPRAS_MuJoCo:
 
     def calculate_single_iteration(self):
         if self.new_input != False:
-            self.new_input = False
             current_twist_msg = self.latest_twist_msg
             # transform into base frame
             cur_linear_vel = np.array([current_twist_msg.twist.linear.x, current_twist_msg.twist.linear.y, current_twist_msg.twist.linear.z, 1])
@@ -115,7 +114,9 @@ class PAPRAS_MuJoCo:
             # print(updated_twist_msg.twist.linear)
 
             self.delta_x = self.calculate_cartesian_cmd(updated_twist_msg)
-            print("delta x wrt base link", self.delta_x[:3])
+            self.new_input = False
+
+            # print("delta x wrt base link", self.delta_x[:3])
 
     def joint_state_callback(self, msg):
         if self.get_new_joint_state:
@@ -178,28 +179,30 @@ class PAPRAS_MuJoCo:
         # TODO: temp removing sync with Gazebo
         # new_joint_state.velocity = delta_theta / self.publish_period  
         new_joint_state.velocity = []            
-
+        traj_msg = Float64MultiArray()
+        traj_msg.data = new_joint_state.position
         # Compose joint trajectory message
-        traj_msg = JointTrajectory()
-        traj_msg.header.stamp = rospy.Time()
-        traj_msg.header.frame_id = self.planning_frame
-        traj_msg.joint_names = ['robot1/joint1',
-                                'robot1/joint2',
-                                'robot1/joint3',
-                                'robot1/joint4',
-                                'robot1/joint5',
-                                'robot1/joint6']
+        # traj_msg = JointTrajectory()
+        # traj_msg.header.stamp = rospy.Time()
+        # traj_msg.header.frame_id = self.planning_frame
+        # traj_msg.joint_names = ['robot1/joint1',
+        #                         'robot1/joint2',
+        #                         'robot1/joint3',
+        #                         'robot1/joint4',
+        #                         'robot1/joint5',
+        #                         'robot1/joint6']
 
-        # Append traj point 
-        point = JointTrajectoryPoint()                  
-        point.positions = new_joint_state.position
-        point.velocities = new_joint_state.velocity
-        point.time_from_start = rospy.Duration(self.publish_period)
-        traj_msg.points.append(point)
-        self.get_new_joint_state = True
-        # enforce position bound limits on joint_state
-        # print(traj_msg)
+        # # Append traj point 
+        # point = JointTrajectoryPoint()                  
+        # point.positions = new_joint_state.position
+        # point.velocities = new_joint_state.velocity
+        # point.time_from_start = rospy.Duration(self.publish_period)
+        # traj_msg.points.append(point)
+        # # enforce position bound limits on joint_state
+        # # print(traj_msg)
         self.execute_pub.publish(traj_msg)
+        self.get_new_joint_state = True
+
         
 
 
@@ -248,7 +251,7 @@ class PAPRAS_MuJoCo:
 
 if __name__ == '__main__':
     rospy.init_node('mujoco', anonymous=True)
-    rate = rospy.Rate(125) # 10hz
+    rate = rospy.Rate(1./0.008) # 10hz
 
     papras_mujoco = PAPRAS_MuJoCo()
 
